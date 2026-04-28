@@ -2,4 +2,4 @@ env: prod
 replicaCount: 2
 
 image:
-  tag: "e6840069fb7543a09e02275e8d42db0b56b88c0e"
+  tag: "fb4516de59bb28ce22381d3eb675293a8c88450d"

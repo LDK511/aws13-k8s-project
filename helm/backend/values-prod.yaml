@@ -2,7 +2,7 @@ env: prod
 replicaCount: 2
 
 image:
-  tag: "07c24562055cdd1b5debabeeb8dca9eacb9e6cab"
+  tag: "fb4516de59bb28ce22381d3eb675293a8c88450d"
 
 ingress:
   host: prod.dongkyu.cloud
