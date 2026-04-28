@@ -1,49 +1,16 @@
-name: Deploy prod
-on:
-  push:
-    branches: [master]
-env: 
-  AWS_REGION: ap-northeast-2
-  ECR_REGISTRY: ${{secrets.AWS_ECR_REGISTRY}}
+  name: Deploy prod
+  on:
+    workflow_dispatch:
 
-jobs:
-  build-and-deploy-backend:
-    runs-on: ubuntu-latest
-    permissions:
-        contents: write  # github actions에 레포 권한 부여하기
-    steps:
-      - uses: actions/checkout@v4 
-      
-      - name: Configure Aws credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}} 
-          aws-region: ${{env.AWS_REGION}}
-      
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-      
-      - name: Build & push Backend
-        #github.sha를 사용한 이유는 푸쉬 후에 이미지 태그를 변경하기 위해
-        run: |
-          docker build -t $ECR_REGISTRY/backend:${{github.sha}} app/backend/ 
-          docker push $ECR_REGISTRY/backend:${{github.sha}}
-      
-      - name: Update values-prod.yaml
-        run: |
-          sed -i "s|tag: .*|tag: \"${{ github.sha }}\"|" helm/backend/values-prod.yaml
-      - name: Git push
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add helm/backend/values-prod.yaml
-          git commit -m "chore: update backend-prod image tag to ${{ github.sha }}"
-          git push
-  build-and-deploy-frontend:
+  env:
+    AWS_REGION: ap-northeast-2
+    ECR_REGISTRY: ${{secrets.AWS_ECR_REGISTRY}}
+
+  jobs:
+    build-and-deploy:
       runs-on: ubuntu-latest
       permissions:
-        contents: write # github actions에 레포 권한 부여하기
+        contents: write
       steps:
         - uses: actions/checkout@v4
 
@@ -57,6 +24,11 @@ jobs:
         - name: Login to ECR
           uses: aws-actions/amazon-ecr-login@v2
 
+        - name: Build & Push Backend
+          run: |
+            docker build -t $ECR_REGISTRY/backend:${{ github.sha }} app/backend/
+            docker push $ECR_REGISTRY/backend:${{ github.sha }}
+
         - name: Build & Push Frontend
           run: |
             docker build -t $ECR_REGISTRY/frontend:${{ github.sha }} app/frontend/
@@ -64,13 +36,13 @@ jobs:
 
         - name: Update values-prod.yaml
           run: |
+            sed -i "s|tag: .*|tag: \"${{ github.sha }}\"|" helm/backend/values-prod.yaml
             sed -i "s|tag: .*|tag: \"${{ github.sha }}\"|" helm/frontend/values-prod.yaml
 
         - name: Git Push
           run: |
             git config user.name "github-actions"
             git config user.email "actions@github.com"
-            git add helm/frontend/values-prod.yaml
-            git commit -m "chore: update frontend-prod image tag to ${{ github.sha }}"
+            git add helm/backend/values-prod.yaml helm/frontend/values-prod.yaml
+            git commit -m "chore: update prod image tags to ${{ github.sha }}"
             git push
-      
