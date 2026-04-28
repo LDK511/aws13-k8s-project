@@ -1,7 +1,7 @@
 name: Deploy prod
 on:
   push:
-    branches: [main]
+    branches: [master]
 env: 
   AWS_REGION: ap-northeast-2
   ECR_REGISTRY: ${{secrets.AWS_ECR_REGISTRY}}
