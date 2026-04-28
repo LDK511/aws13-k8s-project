@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AWS13 Todo</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #333; }
+        .input-area { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 8px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .todo-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
+        .todo-item.completed span { text-decoration: line-through; color: #999; }
+        .del-btn { background: #f44336; margin-left: auto; }
+        .status { padding: 8px; border-radius: 4px; margin-bottom: 20px; background: #e8f5e9; }
+    </style>
+</head>
+<body>
+    <h1>AWS13 Todo</h1>
+    <div id="health" class="status">서버 확인 중...</div>
+    <div class="input-area">
+        <input id="todo-input" type="text" placeholder="할 일 입력..." />
+        <button onclick="addTodo()">추가</button>
+    </div>
+    <div id="todo-list"></div>
+    <script>
+        fetch('/api/health')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('health').textContent = '서버 상태: ' + data.status;
+            })
+            .catch(() => {
+                document.getElementById('health').textContent = '서버 연결 실패';
+            });
+
+        function loadTodos() {
+            fetch('/api/todos')
+                .then(res => res.json())
+                .then(todos => {
+                    const list = document.getElementById('todo-list');
+                    list.innerHTML = '';
+                    todos.forEach(todo => {
+                        list.innerHTML += `
+                            <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                                <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+                                <span>${todo.title}</span>
+                                <button class="del-btn" onclick="deleteTodo(${todo.id})">삭제</button>
+                            </div>`;
+                    });
+                });
+        }
+
+        function addTodo() {
+            const input = document.getElementById('todo-input');
+            if (!input.value.trim()) return;
+            fetch('/api/todos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title: input.value})
+            }).then(() => { input.value = ''; loadTodos(); });
+        }
+
+        function toggleTodo(id) {
+            fetch('/api/todos/' + id, {method: 'PUT'}).then(loadTodos);
+        }
+
+        function deleteTodo(id) {
+            fetch('/api/todos/' + id, {method: 'DELETE'}).then(loadTodos);
+        }
+
+        loadTodos();
+    </script>
+</body>
+</html>
