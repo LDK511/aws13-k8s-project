@@ -1,0 +1,5 @@
+env: dev
+replicaCount: 1
+
+image:
+  tag: "latest"

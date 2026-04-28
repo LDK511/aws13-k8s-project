@@ -1,0 +1,8 @@
+env: prod
+replicaCount: 2
+
+image:
+  tag: "latest"
+
+ingress:
+  host: prod.dongkyu.cloud

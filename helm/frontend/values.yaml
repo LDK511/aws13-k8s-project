@@ -1,0 +1,11 @@
+env: prod
+imagePullSecret: ecr-secret
+
+replicaCount: 2
+
+image:
+  repository: 431538665162.dkr.ecr.ap-northeast-2.amazonaws.com/frontend
+  tag: "latest"
+
+service:
+  port: 80
