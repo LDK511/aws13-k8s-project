@@ -9,6 +9,8 @@ env:
 jobs:
   build-and-deploy-backend:
     runs-on: ubuntu-latest
+    permissions:
+        contents: write  # github actions에 레포 권한 부여하기
     steps:
       - uses: actions/checkout@v4 
       

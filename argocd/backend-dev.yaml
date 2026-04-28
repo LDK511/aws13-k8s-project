@@ -4,10 +4,10 @@ metadata:
   name: backend-dev
   namespace: argocd
 spec:
-  projcet: default
+  project: default
   source:
     repoURL: https://github.com/LDK511/aws13-k8s-project.git
-    path: helm/bakcend # 어떤 Helm chart를
+    path: helm/backend # 어떤 Helm chart를
     targetRevision: develop
     helm:
       valueFiles:
