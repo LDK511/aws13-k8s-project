@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/LDK511/aws13-k8s-project.git
+    path: helm/backend # 어떤 Helm chart를
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values-prod.yaml #어떤 value로
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod #어떤 namespace에
+  syncPolicy:
+    automated: # Git 변경 감지 시 자동 배포
+      selfHeal: true
+      prune: true
