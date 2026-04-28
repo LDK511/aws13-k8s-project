@@ -42,6 +42,8 @@ jobs:
           git push
   build-and-deploy-frontend:
       runs-on: ubuntu-latest
+      permissions:
+        contents: write # github actions에 레포 권한 부여하기
       steps:
         - uses: actions/checkout@v4
 
