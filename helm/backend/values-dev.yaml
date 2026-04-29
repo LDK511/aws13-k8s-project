@@ -2,7 +2,7 @@ env: dev
 replicaCount: 1
 
 image:
-  tag: "fb4516de59bb28ce22381d3eb675293a8c88450d"
+  tag: "4c4e9f850251c2e7e9d9612634c1c0190a50b09a"
 
 ingress:
   host: dev.dongkyu.cloud
